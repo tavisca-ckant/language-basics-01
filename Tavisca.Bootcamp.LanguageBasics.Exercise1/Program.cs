@@ -23,7 +23,8 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
         public static int FindDigit(string equation)
         {
             // Add your code here.
-            throw new NotImplementedException();
+            // throw new NotImplementedException();
+            return FixMultiplication.FindDigit(equation);
         }
     }
 }
