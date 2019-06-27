@@ -1,78 +1,105 @@
 using System;
 
-namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
+namespace GradeBook
 {
     public class FixMultiplication
     {
-       public static int FindDigit (string equation) {
+       public static int FindDigit (string equation) 
+       {
            // Find Indexes of special characters in String.
-            var m = equation.IndexOf("*");
-            var e = equation.IndexOf("=");
-            var q = equation.IndexOf("?");
+            var asteriskIndex = equation.IndexOf("*");
+            var equalsIndex = equation.IndexOf("=");
+            var questionsIndex = equation.IndexOf("?");
 
             // Split string in expression and result
-            string[] result = equation.Split("=");
+            string[] expressionAndResult = equation.Split("=");
 
             // Split expression to extract numbers.
-            string[] num = result[0].Split("*");
+            string[] numbers = expressionAndResult[0].Split("*");
+            var result = expressionAndResult[1];
 
             // if ? is after =
-            if (e < q) {
-                // Convert numbers from string to integer.
-                var n1 = Convert.ToInt32(num[0]);
-                var n2 = Convert.ToInt32(num[1]);
-                var res = n1 * n2 + "";
-                // return an integer on same index as ?, 
-                // - 48 to convert to actual value from ASCII
-                return Convert.ToInt32(res[q-e-1]) - 48;
+            if (questionsIndex > equalsIndex) 
+            {
+                return FindIntegerInResult (numbers, result);
             } 
             // ? in expression part i.e before =
-            else {
+            else 
+            {
                 // ? in num1
-                if (m > q) {
-                    // Get res and n2 as integers.
-                    var res = Convert.ToInt32(result[1]);
-                    var n2 = Convert.ToInt32(num[1]);
-                    // If integral multiplication is possible
-                    if (res % n2 == 0) {
-                        // Evaluate n1 and convert to string.
-                        var n1 = res / n2 + "";
-                        // If ? is at ones place and it has value zero 
-                        if (n1.Length < num[0].Length) {
-                            return -1;
-                        } 
-                        // If ? is not at ones place or it has non-zero value.
-                        else {
-                            // - 48 to convert to actual value from ASCII
-                            return Convert.ToInt32(n1[q]) - 48;
-                        }
-                    } 
-                    // Integral multiplication impossible
-                    else {
-                        return -1;
-                    }
+                if (asteriskIndex > questionsIndex) 
+                {
+                    return FindIntegerInFirstNumber (numbers, result);
                 } 
                 // ? in num2
-                else {
-                    // Get res and n1 as integer
-                    var res = Convert.ToInt32(result[1]);
-                    var n1 = Convert.ToInt32(num[0]);
-                    // If integral multiplication possible
-                    if (res % n1 == 0) {
-                        // Evaluate n2 and convert to string
-                        var n2 = res / n1 + "";
-                        // zero at ones place
-                        if (n2.Length < num[1].Length) {
-                            return -1;
-                        } else {
-                            // - 48 to convert to actual value from ASCII
-                            return Convert.ToInt32(n2[q-m-1]) - 48;
-                        }
-                    } else {
-                        return -1;
-                    }
+                else 
+                {
+                    return FindIntegerInSecondNumber (numbers, result);
                 }
             }
        }
+
+       private static int FindIntegerInFirstNumber (string[] numbers, string result)
+       { 
+            var givenResult = int.Parse(result);
+            var secondNumber = int.Parse(numbers[1]);
+
+            // If integral division is possible
+            if (IsIntegralDivisionPossible (givenResult, secondNumber)) 
+            {
+                return GetIntAtQuestionPlace (secondNumber, givenResult, numbers[0]);
+            } 
+            // Integral division impossible
+            else 
+            {
+                return -1;
+            }
+       }
+
+       private static int FindIntegerInSecondNumber (string[] numbers, string result) 
+       {
+            var givenResult = int.Parse(result);
+            var firstNumber = int.Parse(numbers[0]);
+
+            // If integral division is possible
+            if (IsIntegralDivisionPossible(givenResult, firstNumber)) 
+            {
+                return GetIntAtQuestionPlace (firstNumber, givenResult, numbers[1]);
+            } 
+            // Integral division impossible
+            else 
+            {
+                return -1;
+            }
+       }
+
+       private static int FindIntegerInResult (string[] numbers, string result)
+       {
+           var questionsIndex = result.IndexOf ("?");
+           var num1 = int.Parse (numbers[0]);
+           var num2 = int.Parse (numbers[1]);
+           var expectedResult = num1 * num2 + "";
+           return int.Parse(expectedResult[questionsIndex].ToString());
+       }
+
+       private static bool IsIntegralDivisionPossible (int num1, int num2)
+       {
+            return (num1 % num2 == 0);
+       }
+
+       private static int GetIntAtQuestionPlace (int number, int result, string toComputeInNumber)
+        {
+            var expectedNumber = result / number + "";
+
+            if (expectedNumber.Length < toComputeInNumber.Length)
+            {
+                return -1;
+            }
+            else 
+            {
+                var questionsIndex = toComputeInNumber.IndexOf ("?");
+                return int.Parse (expectedNumber[questionsIndex].ToString());
+            }
+        }
     }
 }
